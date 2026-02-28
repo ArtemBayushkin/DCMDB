@@ -1,0 +1,42 @@
+{
+    "database": {
+        "main_path": "C:/Users/artem/OneDrive/Рабочий стол/python/db_changer/Исходные данные/DCM-ТAES-ARCHIVE.accdb",
+        "employees_path": "C:/Users/artem/OneDrive/Рабочий стол/python/db_changer/Исходные данные/List_of_employees.accdb",
+        "editable_columns": {
+            "default": [
+                "Статус",
+                "Приоритет",
+                "Комментарий"
+            ],
+            "admin": [
+                "Статус",
+                "Приоритет",
+                "Комментарий",
+                "Исполнитель",
+                "Срок_выполнения",
+                "Заметка"
+            ],
+            "tech": [
+                "Статус",
+                "Приоритет"
+            ]
+        },
+        "auto_refresh_interval_sec": 60
+    },
+    "ui": {
+        "theme": "system",
+        "font_size": 12,
+        "language": "ru",
+        "maximized_on_start": true
+    },
+    "behavior": {
+        "confirm_exit": true,
+        "auto_backup_on_close": false,
+        "show_status_messages": true
+    },
+    "paths": {
+        "reports_dir": "reports/",
+        "backups_dir": "backups/",
+        "logs_dir": "logs/"
+    }
+}
