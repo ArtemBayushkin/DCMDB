@@ -9,7 +9,7 @@ from app.core.base_db_manager import BaseDatabaseManager
 from app.config.settings_manager import SettingsManager
 
 
-class AccessManager(BaseDatabaseManager): #
+class AccessManager(BaseDatabaseManager):
     """
         Менеджер для базы данных
 
