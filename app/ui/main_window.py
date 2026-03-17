@@ -1,4 +1,3 @@
-# ui/main_window.py
 from PyQt6.QtWidgets import (QMainWindow, QTabWidget,
                              QDockWidget, QListWidget, QListWidgetItem,
                              QToolBar, QLabel)
@@ -116,13 +115,13 @@ class AdvancedMainWindow(QMainWindow):
             --------------
             1. Проверяет существование ключа в реестре вкладок
             2. Если вкладка уже открыта - переключается на неё
-            3. Если не открыта - создаёт новую вкладку
+            3. Если не открыта - создаёт новую вкладку.
         :param key: str
                     (Ключ вкладки из TAB_REGISTRY)
         :Example:
         >>> self.open_or_switch_tab('home')
         """
-        print('AdvancedMainWindow -> open_or_switch_tab')
+        # print('AdvancedMainWindow -> open_or_switch_tab')
         if key not in TAB_REGISTRY:
             self.status_bar.warning_dialog(self, message=f"Вкладка '{key}' не зарегистрирована")
             # self.status_bar.show_warning(f"Вкладка '{key}' не зарегистрирована", 5000)
@@ -147,14 +146,17 @@ class AdvancedMainWindow(QMainWindow):
             self.status_bar.show_error(f"Ошибка создания вкладки: {e}")
 
     def close_tab(self, index: int):
-        """Закрытие вкладки по крестику"""
-        # if index == 0:
-        #    QMessageBox.information(
-        #        self,
-        #        "Запрещено",
-        #        "Вкладку «Главная» закрывать нельзя — она всегда должна быть доступна."
-        #    )
-        #    return
+        """
+        Закрытие вкладки по крестику.
+        Если вкладка содержит несохранённые изменения — спрашивает подтверждение.
+        """
+        widget = self.tab_widget.widget(index)
         tab_title = self.tab_widget.tabText(index)
+
+        # Проверяем, есть ли у вкладки несохранённые изменения
+        if hasattr(widget, 'has_unsaved_changes') and widget.has_unsaved_changes():
+            if not widget._confirm_unsaved(f"Закрыть вкладку «{tab_title}» и потерять изменения"):
+                return  # Пользователь отменил закрытие
+
         self.tab_widget.removeTab(index)
         self.status_bar.show_info(f"Закрыта вкладка: {tab_title}", 1800)
