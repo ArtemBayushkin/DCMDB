@@ -29,45 +29,43 @@ class AdminTab(BaseTab):
         self.layout.addWidget(cq_text, 1, 1, alignment=Qt.AlignmentFlag.AlignCenter)
 
         # Загрузить основные вопросы DCM
-        cq_button = QPushButton("Загрузить основные вопросы DCM")
-        cq_button.setToolTip("Загрузить в базу основные вопросы DCM")
-        cq_button.setMinimumHeight(60)
-        cq_button.setFont(QFont("Arial", 12))
-        cq_button.clicked.connect(lambda: self.main_window.open_or_switch_tab('cq')
-                                  if CurrentUser().is_admin else
-                                  self.status_bar.show_warning("Эта функция доступна только администраторам"))
-        self.layout.addWidget(cq_button, 2, 0)
+        upload_dcm_button = QPushButton("Загрузить основные вопросы DCM")
+        upload_dcm_button.setToolTip("Загрузить в базу основные вопросы DCM")
+        upload_dcm_button.setMinimumHeight(60)
+        upload_dcm_button.setFont(QFont("Arial", 12))
+        upload_dcm_button.clicked.connect(lambda: self.connect_admin('dcm_upload'))
+        self.layout.addWidget(upload_dcm_button, 2, 0)
 
         # Вопросы DCM в отправку
         all_dmc_button = QPushButton("Вопросы DCM в отправку")
         all_dmc_button.setToolTip("Выгрузить вопросы DCM, готовые к отправке")
         all_dmc_button.setMinimumHeight(60)
         all_dmc_button.setFont(QFont("Arial", 12))
-        # all_dmc_button.clicked.connect(lambda: self.main_window.open_or_switch_tab('all_dcm'))
+        all_dmc_button.clicked.connect(lambda: self.main_window.open_or_switch_tab('send_dcm'))
         self.layout.addWidget(all_dmc_button, 3, 0)
 
         # Вопросы DCM на уточнение
-        all_dmc_button = QPushButton("Вопросы DCM на уточнение")
-        all_dmc_button.setToolTip("Выгрузить вопросы DCM, необходимые для уточнения")
+        all_dmc_button = QPushButton("Срочные DCM в архив")
+        all_dmc_button.setToolTip("Срочные вопросы DCM для отправки в архив")
         all_dmc_button.setMinimumHeight(60)
         all_dmc_button.setFont(QFont("Arial", 12))
-        # all_dmc_button.clicked.connect(lambda: self.main_window.open_or_switch_tab('all_dcm'))
+        all_dmc_button.clicked.connect(lambda: self.main_window.open_or_switch_tab("archive_cq"))
         self.layout.addWidget(all_dmc_button, 4, 0)
 
         # Загрузить срочные вопросы DCM
-        button = QPushButton("Загрузить срочные вопросы DCM")
-        button.setToolTip("Загрузить в базу срочные вопросы DCM (CQ)")
-        button.setMinimumHeight(60)
-        button.setFont(QFont("Arial", 12))
-        # button.clicked.connect(lambda: self.main_window.open_or_switch_tab('archive'))
-        self.layout.addWidget(button, 2, 1)
+        upload_cq_button = QPushButton("Загрузить срочные вопросы DCM")
+        upload_cq_button.setToolTip("Загрузить в базу срочные вопросы DCM (CQ)")
+        upload_cq_button.setMinimumHeight(60)
+        upload_cq_button.setFont(QFont("Arial", 12))
+        upload_cq_button.clicked.connect(lambda: self.connect_admin('cq_upload'))
+        self.layout.addWidget(upload_cq_button, 2, 1)
 
         # Срочные вопросы DCM в отправку
         button = QPushButton("Срочные вопросы DCM в отправку")
         button.setToolTip("Выгрузить срочные вопросы DCM, готовые к отправке")
         button.setMinimumHeight(60)
         button.setFont(QFont("Arial", 12))
-        # button.clicked.connect(lambda: self.main_window.open_or_switch_tab('archive'))
+        button.clicked.connect(lambda: self.connect_admin("send_cq"))
         self.layout.addWidget(button, 3, 1)
 
         # Срочные вопросы DCM в отправку
@@ -75,7 +73,7 @@ class AdminTab(BaseTab):
         button.setToolTip("Выгрузить срочные вопросы DCM, необходимые для уточнения")
         button.setMinimumHeight(60)
         button.setFont(QFont("Arial", 12))
-        # button.clicked.connect(lambda: self.main_window.open_or_switch_tab('archive'))
+        button.clicked.connect(lambda: self.main_window.open_or_switch_tab("cq_clar"))
         self.layout.addWidget(button, 4, 1)
 
         # Проверка перевода

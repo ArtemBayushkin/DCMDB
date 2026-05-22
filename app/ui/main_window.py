@@ -2,9 +2,10 @@ from PyQt6.QtWidgets import (QMainWindow, QTabWidget,
                              QDockWidget, QListWidget, QListWidgetItem,
                              QToolBar, QLabel)
 from PyQt6.QtCore import Qt
-from app.ui.tabs.home_tab import HomeTab
 from PyQt6.QtGui import QFont
 
+from app.ui.tabs.config.about import AboutTab
+from app.ui.tabs.user.home_tab import HomeTab
 from app.core.registry import TAB_REGISTRY
 from app.ui.components.status_bar import StatusBar
 
@@ -34,8 +35,6 @@ class AdvancedMainWindow(QMainWindow):
 
         # Создаём боковую навигацию
         self._init_navigation_dock()
-
-        # ... остальные методы: create_menu_bar, create_toolbars и т.д.
 
     def _init_home_tab(self):
         """
@@ -77,8 +76,7 @@ class AdvancedMainWindow(QMainWindow):
         service_menu.addAction("Настройки", lambda: self.open_or_switch_tab("settings"))
 
         help_menu = menubar.addMenu("❓ &Помощь")
-        help_menu.addAction("📖 Справка")
-        # help_menu.addAction(self.about_action)
+        help_menu.addAction("О программе", self.show_about_dialog)
 
         # Нижняя статусная панель
         bottom_toolbar = QToolBar("Информационная панель")
@@ -123,7 +121,7 @@ class AdvancedMainWindow(QMainWindow):
         """
         # print('AdvancedMainWindow -> open_or_switch_tab')
         if key not in TAB_REGISTRY:
-            self.status_bar.warning_dialog(self, message=f"Вкладка '{key}' не зарегистрирована")
+            self.status_bar.warning_dialog(self, message="Вкладка не зарегистрирована")
             # self.status_bar.show_warning(f"Вкладка '{key}' не зарегистрирована", 5000)
             return
 
@@ -141,7 +139,7 @@ class AdvancedMainWindow(QMainWindow):
             new_widget = tab_class(self)
             self.tab_widget.addTab(new_widget, title)
             self.tab_widget.setCurrentIndex(self.tab_widget.count() - 1)
-            self.status_bar.show_info(f"Открыта вкладка: {title}", 2200)
+            self.status_bar.show_info(f"Открыта вкладка: {title}", 1000)
         except Exception as e:
             self.status_bar.show_error(f"Ошибка создания вкладки: {e}")
 
@@ -153,10 +151,15 @@ class AdvancedMainWindow(QMainWindow):
         widget = self.tab_widget.widget(index)
         tab_title = self.tab_widget.tabText(index)
 
-        # Проверяем, есть ли у вкладки несохранённые изменения
         if hasattr(widget, 'has_unsaved_changes') and widget.has_unsaved_changes():
             if not widget._confirm_unsaved(f"Закрыть вкладку «{tab_title}» и потерять изменения"):
                 return  # Пользователь отменил закрытие
 
         self.tab_widget.removeTab(index)
-        self.status_bar.show_info(f"Закрыта вкладка: {tab_title}", 1800)
+        self.status_bar.show_info(f"Закрыта вкладка: {tab_title}", 1000)
+
+    def show_about_dialog(self):
+        """Показывает диалоговое окно 'О программе'"""
+        from app.ui.tabs.config.about import AboutDialog
+        dialog = AboutDialog(self)
+        dialog.exec()

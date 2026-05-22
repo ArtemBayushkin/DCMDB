@@ -25,7 +25,7 @@ class BaseDatabaseManager(ABC):
     def delete_record(self, table_name: str, record_id: Any) -> bool: pass
 
     @abstractmethod
-    def execute_query(self, query: str, params: tuple = None) -> pd.DataFrame: pass
+    def execute_query(self, query: str, params: list = None) -> pd.DataFrame: pass
 
     @abstractmethod
     def test_connection(self) -> tuple[bool, str]:

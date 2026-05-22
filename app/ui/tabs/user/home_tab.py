@@ -11,7 +11,7 @@ class HomeTab(BaseTab):
 
     def add_content(self):
         # Все основные DCM в работе
-        dcm_button = QPushButton("📊 Все основные DCM в работе")
+        dcm_button = QPushButton("📋 Все основные DCM в работе")
         dcm_button.setToolTip("Открыть базу с основными DCM в работе")
         dcm_button.setMinimumHeight(60)
         dcm_button.setFont(QFont("Arial", 12))
@@ -19,7 +19,7 @@ class HomeTab(BaseTab):
         self.layout.addWidget(dcm_button)
 
         # Все срочные DCM в работе
-        cq_button = QPushButton("📋 Все срочные DCM в работе")
+        cq_button = QPushButton("🚨 Все срочные DCM в работе")
         cq_button.setToolTip("Открыть базу со срочными DCM в работе")
         cq_button.setMinimumHeight(60)
         cq_button.setFont(QFont("Arial", 12))

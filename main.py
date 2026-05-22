@@ -5,7 +5,7 @@
 import sys
 from PyQt6.QtWidgets import QApplication
 from app.core.current_user import current_user
-from ui.main_window import AdvancedMainWindow
+from app.ui.main_window import AdvancedMainWindow
 
 
 def main():

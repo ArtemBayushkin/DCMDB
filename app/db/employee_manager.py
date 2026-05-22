@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import List, Dict, Any, Optional, Tuple
 
 from app.core.base_db_manager import BaseDatabaseManager
-from app.config.settings_manager import SettingsManager
+from app.config.settings_manager import settings
 
 
 class EmployeeDatabaseManager(BaseDatabaseManager):
@@ -21,19 +21,19 @@ class EmployeeDatabaseManager(BaseDatabaseManager):
     def __init__(self, db_path: str | Path | None = None):
 
         if db_path is None:
-            db_path = SettingsManager().get_employees_db_path()
+            db_path = settings.get_employees_db_path()
         self.db_path = Path(db_path).resolve()
 
         if not self.db_path.exists():
             raise FileNotFoundError(f"EmployeeDatabaseManager -> Файл базы данных не найден: {self.db_path}")
-        #print('EmployeeDatabaseManager -> start self.connection_string')
-        #print(f'EmployeeDatabaseManager -> Path {self.db_path}')
+        # print('EmployeeDatabaseManager -> start self.connection_string')
+        # print(f'EmployeeDatabaseManager -> Path {self.db_path}')
         self.connection_string = (
             r'DRIVER={Microsoft Access Driver (*.mdb, *.accdb)};'
             f'DBQ={self.db_path};'
             r'ReadOnly=0;'  # можно менять на 1, если нужна только чтение
         )
-        #print('EmployeeDatabaseManager -> end self.connection_string')
+        # print('EmployeeDatabaseManager -> end self.connection_string')
         self._conn = None
 
     def __enter__(self):
@@ -93,8 +93,10 @@ class EmployeeDatabaseManager(BaseDatabaseManager):
             print(f"EmployeeDatabaseManager -> get_table_columns -> Ошибка при получении структуры таблицы {table_name}: {e}")
             return []
 
-    def get_table_data(self, table_name: str, limit: int = 1000, where: str = None) -> pd.DataFrame:
-        query = f"SELECT TOP {limit} * FROM [{table_name}]"
+    def get_table_data(self, columns: list = None, table_name: str = None, limit: int = 1000,
+                       where: str = None) -> pd.DataFrame:
+        select_fields = ", ".join(f"[{c}]" for c in columns) if columns else "*"
+        query = f"SELECT TOP {limit} {select_fields} FROM [List]"
         if where:
             query += f" WHERE {where}"
 
@@ -106,7 +108,7 @@ class EmployeeDatabaseManager(BaseDatabaseManager):
             print(f"EmployeeDatabaseManager -> get_table_data -> Ошибка при чтении таблицы {table_name}: {e}")
             return pd.DataFrame()
 
-    def execute_query(self, query: str, params: tuple = None) -> pd.DataFrame:
+    def execute_query(self, query: str, params: list = None) -> pd.DataFrame:
         try:
             conn = self._get_connection()
             if params:
@@ -134,7 +136,7 @@ class EmployeeDatabaseManager(BaseDatabaseManager):
 
     def get_all_employees(self) -> pd.DataFrame:
         """Все сотрудники"""
-        return self.get_table_data("List", limit=100)  # предполагаемая таблица — List
+        return self.get_table_data()  # предполагаемая таблица — List
 
     def get_admins(self) -> pd.DataFrame:
         """Только администраторы (где Admin = True)"""
@@ -146,7 +148,7 @@ class EmployeeDatabaseManager(BaseDatabaseManager):
         """Проверка, является ли человек администратором по ФИО"""
         df = self.execute_query(
             "SELECT Admin FROM [List] WHERE ФИО = ?",
-            params=(full_name,)
+            params=[full_name]
         )
         if df.empty:
             return False
@@ -156,7 +158,7 @@ class EmployeeDatabaseManager(BaseDatabaseManager):
         """Найти сотрудника по Учетной записи windows"""
         df = self.execute_query(
             "SELECT * FROM [List] WHERE Учетка = ?",
-            params=(windows_login,)
+            params=[windows_login]
         )
         if df.empty:
             return None
@@ -182,40 +184,39 @@ class EmployeeDatabaseManager(BaseDatabaseManager):
 
 
 # ───────────────────────────────────────────────
-# Пример использования (можно запускать отдельно для теста)
+# Пример использования
 # ───────────────────────────────────────────────
 
-#if __name__ == "__main__":
-#    settings = SettingsManager()
-#    from app.core.current_user import CurrentUser
-#    curr_user = CurrentUser()
-#    login = curr_user._get_windows_login()
-#    print(login)
-#    # Замени на свой реальный путь
-#    PATH = settings.get_employees_db_path()
-#    try:
-#        mgr = EmployeeDatabaseManager()
-#        success, msg = mgr.test_connection()
-#        print(f"Тест подключения: {success} → {msg}")
-#
-#        if success:
-#            print("\nТаблицы в базе:")
-#            print(mgr.get_tables())
-#
-#            print("\nАдминистраторы:")
-#            admins = mgr.get_admins()
-#            print(admins[['ФИО', 'Admin']])
-#
-#            print("\nАртём — администратор?")
-#            print(mgr.is_admin("Баюшкин Артем Олегович"))  # подставь реальное ФИО
-#
-#            empl = mgr.find_employee(login)
-#            print(empl)
-#            print('UKA' in empl['Перечень_зданий'])
-#            print('32' in empl['Код_специальности'])
-#
-#    except Exception as e:
-#        print(f"Ошибка: {e}")
-#    finally:
-#        if 'mgr' in locals():
-#            mgr.close()
+if __name__ == "__main__":
+    from app.core.current_user import CurrentUser
+    curr_user = CurrentUser()
+    login = curr_user._get_windows_login()
+    print(login)
+    # Замени на свой реальный путь
+    PATH = settings.get_employees_db_path()
+    try:
+        mgr = EmployeeDatabaseManager()
+        success, msg = mgr.test_connection()
+        print(f"Тест подключения: {success} → {msg}")
+
+        if success:
+            print("\nТаблицы в базе:")
+            print(mgr.get_tables())
+
+            print("\nАдминистраторы:")
+            admins = mgr.get_admins()
+            print(admins[['ФИО', 'Admin']])
+
+            print("\nАртём — администратор?")
+            print(mgr.is_admin("Баюшкин Артем Олегович"))  # подставь реальное ФИО
+
+            empl = mgr.find_employee(login)
+            print(empl)
+            print('UKA' in empl['Перечень_зданий'])
+            print('32' in empl['Код_специальности'])
+
+    except Exception as e:
+        print(f"Ошибка: {e}")
+    finally:
+        if 'mgr' in locals():
+            mgr.close()

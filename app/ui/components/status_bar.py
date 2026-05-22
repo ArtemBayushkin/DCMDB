@@ -72,20 +72,6 @@ class StatusBar(QStatusBar):
         icon = self.style().standardIcon(QStyle.StandardPixmap.SP_DialogApplyButton)
         self._show_temporary_message(text, icon, duration)
 
-    #def show_warning(self, text: str, duration: Optional[int] = None) -> None:
-    #    """
-    #    Показать предупреждение с иконкой.
-    #    """
-    #    icon = self.style().standardIcon(QStyle.StandardPixmap.SP_MessageBoxWarning)
-    #    self._show_temporary_message(text, icon, duration)
-
-    # def show_error(self, text: str, duration: Optional[int] = None) -> None:
-    #    """
-    #    Показать сообщение об ошибке с иконкой.
-    #    """
-    #    icon = self.style().standardIcon(QStyle.StandardPixmap.SP_MessageBoxCritical)
-    #    self._show_temporary_message(text, icon, duration)
-
     def show_plain_message(self, text: str, duration: Optional[int] = None) -> None:
         """
         Показать обычное текстовое сообщение без иконки (использует встроенный метод).

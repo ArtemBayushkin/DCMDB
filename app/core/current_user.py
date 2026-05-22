@@ -4,7 +4,7 @@ import getpass
 from typing import Optional, Dict, Any
 
 from app.db.employee_manager import EmployeeDatabaseManager
-from app.config.settings_manager import SettingsManager
+from app.config.settings_manager import settings
 
 
 class CurrentUser:
@@ -56,14 +56,13 @@ class CurrentUser:
 
         try:
             print("CurrentUser -> _load_employee_data → Начинаем загрузку данных сотрудника...")
-            settings = SettingsManager()
             db_path = settings.get_employees_db_path()  # или settings.get_employees_path()
-            #print(f"CurrentUser -> _load_employee_data → Путь к базе: {db_path}")
+            # print(f"CurrentUser -> _load_employee_data → Путь к базе: {db_path}")
 
             with EmployeeDatabaseManager(db_path) as mgr:
-                #print("CurrentUser -> _load_employee_data → Менеджер создан")
+                # print("CurrentUser -> _load_employee_data → Менеджер создан")
                 employee = mgr.find_employee(self._windows_login)
-                #print("CurrentUser -> _load_employee_data → Запрос find_employee выполнен")
+                # print("CurrentUser -> _load_employee_data → Запрос find_employee выполнен")
 
                 if employee:
                     self._employee_data = employee

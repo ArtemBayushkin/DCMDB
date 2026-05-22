@@ -21,14 +21,48 @@ class SettingsManager:
 
     DEFAULT_SETTINGS = {
         "database": {
-            "main_path": "C:/Users/artem/OneDrive/Рабочий стол/python/db_changer/Исходные данные/DCM-ТAES-ARCHIVE.accdb",
+            "main_path": "",
             "employees_path": "",
             "editable_columns": {
-                "default": ["Статус", "Приоритет", "Комментарий"],
-                "admin":   ["Статус", "Приоритет", "Комментарий", "Исполнитель", "Срок_выполнения", "Заметка"],
-                "tech":    ["Статус", "Приоритет"]
+                "default": ["Texts of  decisions, date",
+                            "Текст решения, дата",
+                            "Desighner's surname",
+                            "В отправку",
+                            "Требуется уточнение",
+                            "Заметка"],
+                "admin":   ["ID",
+                            "Date of meeting",
+                            "Code of the WD or MD",
+                            "Description of problem",
+                            "Symbols of decisions under the Protocol",
+                            "Texts of  decisions, date",
+                            "Desighner's surname",
+                            "От кого вопрос",
+                            "Отдел задавший вопрос",
+                            "Urgent/Срочный",
+                            "Appendix",
+                            "Приложение",
+                            "Текст решения, дата",
+                            "Заметка",
+                            "В отправку",
+                            "Отправлен Заказчику",
+                            "Дата отправки Заказчику",
+                            "Требуется уточнение",
+                            "Аннулирован",
+                            "Документ",
+                            "Дата аннулирования",
+                            "Соисполнитель",
+                            "Код",
+                            "Дата изменения текста ответа",
+                            "В архив",
+                            "Вопрос в рабочем порядке",
+                            "Перевод проверен",
+                            "В списке комплектов поставки Поставщика",
+                            "Ответ забрали",
+                            "Дата забора ответа",
+                            "Обязательство выполнено"
+                            ],
                 },
-            "auto_refresh_interval_sec": 60,
         },
         "ui": {
             "theme": "system",          # "system", "light", "dark"
@@ -99,8 +133,11 @@ class SettingsManager:
         # print('SettingsManager -> get_employees_db_path -> вызов функции')
         return self._settings["database"]["employees_path"]
 
-    def get_editable_columns(self) -> List[str]:
-        return self._settings["database"]["editable_columns"]
+    def get_editable_columns(self, admin: bool = False) -> List[str]:
+        if admin:
+            return self._settings["database"]["editable_columns"]["admin"]
+        else:
+            return self._settings["database"]["editable_columns"]["default"]
 
     def get_theme(self) -> str:
         return self._settings["ui"]["theme"]
@@ -153,3 +190,14 @@ class SettingsManager:
         """Сброс всех настроек к дефолтным"""
         self._settings = self.DEFAULT_SETTINGS.copy()
         self._save()
+
+
+settings = SettingsManager()
+
+
+def main():
+    print(settings.get_editable_columns(False))
+
+
+if __name__ == "__main__":
+    main()
