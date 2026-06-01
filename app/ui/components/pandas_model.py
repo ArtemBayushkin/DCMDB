@@ -16,6 +16,8 @@ class PandasModel(QAbstractTableModel):
         print("PandasModel.__init__ -> _original.copy() OK")
         self._change_log: dict = {}
         print("PandasModel.__init__ -> _change_log OK")
+        is_admin = CurrentUser().is_admin
+        self._editable_columns = set(settings.get_editable_columns(admin=is_admin))
 
         print("PandasModel.__init__ -> assigning column_types...")
         self.column_types = column_types or {
@@ -103,9 +105,11 @@ class PandasModel(QAbstractTableModel):
 
         flags = Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable
 
-        if ctype == "checkbox":
+        can_edit = col_name in self._editable_columns
+
+        if ctype == "checkbox" and can_edit:
             flags |= Qt.ItemFlag.ItemIsUserCheckable
-        elif ctype in ("text", "date_short", "combo"):
+        elif ctype in ("text", "date_short", "combo") and can_edit:
             flags |= Qt.ItemFlag.ItemIsEditable
 
         return flags
