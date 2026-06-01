@@ -33,7 +33,10 @@ class AdminTab(BaseTab):
         upload_dcm_button.setToolTip("Загрузить в базу основные вопросы DCM")
         upload_dcm_button.setMinimumHeight(60)
         upload_dcm_button.setFont(QFont("Arial", 12))
-        upload_dcm_button.clicked.connect(lambda: self.connect_admin('dcm_upload'))
+        upload_dcm_button.clicked.connect(lambda: self.connect_admin('dcm_upload')
+                                            if CurrentUser().is_admin else
+                                            self.status_bar.show_warning("Эта функция доступна только администраторам")
+                                          )
         self.layout.addWidget(upload_dcm_button, 2, 0)
 
         # Вопросы DCM в отправку
@@ -41,7 +44,10 @@ class AdminTab(BaseTab):
         all_dmc_button.setToolTip("Выгрузить вопросы DCM, готовые к отправке")
         all_dmc_button.setMinimumHeight(60)
         all_dmc_button.setFont(QFont("Arial", 12))
-        all_dmc_button.clicked.connect(lambda: self.main_window.open_or_switch_tab('send_dcm'))
+        all_dmc_button.clicked.connect(lambda: self.main_window.open_or_switch_tab('send_dcm')
+                                        if CurrentUser().is_admin else
+                                        self.status_bar.show_warning("Эта функция доступна только администраторам")
+                                       )
         self.layout.addWidget(all_dmc_button, 3, 0)
 
         # Вопросы DCM на уточнение
@@ -49,7 +55,10 @@ class AdminTab(BaseTab):
         all_dmc_button.setToolTip("Срочные вопросы DCM для отправки в архив")
         all_dmc_button.setMinimumHeight(60)
         all_dmc_button.setFont(QFont("Arial", 12))
-        all_dmc_button.clicked.connect(lambda: self.main_window.open_or_switch_tab("archive_cq"))
+        all_dmc_button.clicked.connect(lambda: self.main_window.open_or_switch_tab("archive_cq")
+                                        if CurrentUser().is_admin else
+                                        self.status_bar.show_warning("Эта функция доступна только администраторам")
+                                       )
         self.layout.addWidget(all_dmc_button, 4, 0)
 
         # Загрузить срочные вопросы DCM
@@ -57,7 +66,10 @@ class AdminTab(BaseTab):
         upload_cq_button.setToolTip("Загрузить в базу срочные вопросы DCM (CQ)")
         upload_cq_button.setMinimumHeight(60)
         upload_cq_button.setFont(QFont("Arial", 12))
-        upload_cq_button.clicked.connect(lambda: self.connect_admin('cq_upload'))
+        upload_cq_button.clicked.connect(lambda: self.connect_admin('cq_upload')
+                                        if CurrentUser().is_admin else
+                                        self.status_bar.show_warning("Эта функция доступна только администраторам")
+                                         )
         self.layout.addWidget(upload_cq_button, 2, 1)
 
         # Срочные вопросы DCM в отправку
@@ -65,7 +77,10 @@ class AdminTab(BaseTab):
         button.setToolTip("Выгрузить срочные вопросы DCM, готовые к отправке")
         button.setMinimumHeight(60)
         button.setFont(QFont("Arial", 12))
-        button.clicked.connect(lambda: self.connect_admin("send_cq"))
+        button.clicked.connect(lambda: self.connect_admin("send_cq")
+                                if CurrentUser().is_admin else
+                                self.status_bar.show_warning("Эта функция доступна только администраторам")
+                               )
         self.layout.addWidget(button, 3, 1)
 
         # Срочные вопросы DCM в отправку
@@ -73,7 +88,10 @@ class AdminTab(BaseTab):
         button.setToolTip("Выгрузить срочные вопросы DCM, необходимые для уточнения")
         button.setMinimumHeight(60)
         button.setFont(QFont("Arial", 12))
-        button.clicked.connect(lambda: self.main_window.open_or_switch_tab("cq_clar"))
+        button.clicked.connect(lambda: self.main_window.open_or_switch_tab("cq_clar")
+                                if CurrentUser().is_admin else
+                                self.status_bar.show_warning("Эта функция доступна только администраторам")
+                               )
         self.layout.addWidget(button, 4, 1)
 
         # Проверка перевода
