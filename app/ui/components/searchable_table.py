@@ -105,7 +105,14 @@ class AdvancedTableView(QTableView):
                             'В списке комплектов поставки Поставщика': 30,
                             'Ответ забрали': 100,
                             'Дата забора ответа': 50,
-                            'Обязательство выполнено': 30}
+                            'Обязательство выполнено': 30,
+                            'Телефон': 60,
+                            'ФИО': 250,
+                            'Специальность': 150,
+                            'Код специальности': 150,
+                            'Перечень систем по всем зданиям': 150,
+                            'Перечень зданий': 150
+                            }
         if combo_choices is None:
             combo_choices = {
                 "Symbols of decisions under the Protocol": ["", "CA", "CD(C)", "CD(S)", "CN", "CR", "Rev", "Protocol"]}
@@ -262,4 +269,3 @@ class AdvancedTableView(QTableView):
         # Копируем в буфер обмена
         clipboard = QApplication.clipboard()
         clipboard.setText(clipboard_text)
-
