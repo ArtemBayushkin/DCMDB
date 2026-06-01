@@ -26,6 +26,9 @@ class CqClar(BaseTab):
         self.load_data()
         print("TranslateTab.add_content -> load_data returned OK")
 
+    def _confirm_unsaved(self, action: str = "продолжить"):
+        return True
+
     def load_data(self, checked=None, force: bool = False):
         columns = [
             "ID", "Date of meeting", "Code of the WD or MD",
@@ -34,10 +37,6 @@ class CqClar(BaseTab):
             "Texts of  decisions, date", "Desighner's surname", "Приложение", "В отправку",
             "Требуется уточнение"
         ]
-        print(f"SendCqTab.load_data -> start | force={force}")
-        if not force and not self._confirm_unsaved("Обновить данные и потерять изменения"):
-            print("TranslateTab.load_data -> data is unsaved and close/refresh")
-            return
 
         print("SendCqTab.load_data -> clearing old model...")
         self.table.proxy_model.setSourceModel(None)
