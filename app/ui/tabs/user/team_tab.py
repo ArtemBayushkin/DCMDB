@@ -48,7 +48,7 @@ class TeamTab(BaseTab):
 
     def load_data(self):
         with EmployeeDatabaseManager() as mgr:
-            df = mgr.get_all_employees()
+            df = mgr.get_all_employees(where="[Телефон] <> '77777' AND [Фамилия_англ] IS NOT NULL AND [Фамилия_англ] <> ''")
         if not df.empty:
             display_columns = {
                 "ФИО": "ФИО",
@@ -65,6 +65,7 @@ class TeamTab(BaseTab):
 
             model = PandasModel(df_display)
             self.table.proxy_model.setSourceModel(model)
+            self.table.apply_column_config(row_height=30)
         else:
             StatusBar.warning_dialog(self, message=f"База данных сотрудников не подключена. "
                                                    f"Перейдите в Сервис -> Настройки для добавления базы")
