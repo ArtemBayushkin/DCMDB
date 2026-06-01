@@ -41,7 +41,6 @@ class AllDcmTab(BaseTab):
         with self._mgr as mgr:
             model = mgr.load_data(
                 limit=1000,
-                need_clarification=False,
                 in_send=False,
                 archive=False,
                 columns=[
@@ -56,7 +55,9 @@ class AllDcmTab(BaseTab):
                     "Texts of  decisions, date",
                     "Desighner's surname",
                     "Приложение",
-                    "Заметка"
+                    "Заметка",
+                    "Требуется уточнение",
+                    "В отправку",
                 ]
             )
 
