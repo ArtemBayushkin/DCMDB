@@ -33,7 +33,7 @@ class ArchiveTab(BaseTab):
 
         data_label = QLabel("Date of meeting")
         self.data_line = QLineEdit()
-        self.data_line.setPlaceholderText("ДД.ММ.ГГГГ")
+        self.data_line.setPlaceholderText("ДД.ММ.ГГГГ-ДД.ММ.ГГГГ")
 
         id_label = QLabel("ID")
         self.id_line = QLineEdit()
@@ -97,15 +97,29 @@ class ArchiveTab(BaseTab):
         spisok = self.on_button_clicked()
         conditions = []
 
-        for key in spisok:
-            if spisok[key]:
-                conditions.append(f"{key} LIKE '%{spisok[key]}%'")
+        for key, value in spisok.items():
+            if not value:
+                continue
+
+            # Специальная обработка для поля с датой
+            if key == "[Date of meeting]":
+                date_condition = self._build_date_condition(value)
+                if date_condition:
+                    conditions.append(date_condition)
+                else:
+                    # Если не дата, ищем как обычный текст
+                    conditions.append(f"{key} LIKE '%{value}%'")
+            else:
+                # Обычный поиск по LIKE для всех остальных полей
+                conditions.append(f"{key} LIKE '%{value}%'")
+
         where_clause = " AND ".join(conditions) if conditions else "1=1"
 
         query = "SELECT [Date of meeting], [ID], [Code of the WD or MD], [Description of problem], " \
                 "[Symbols of decisions under the Protocol], [Texts of  decisions, date], [Текст решения, дата], " \
                 f"[Desighner's surname], [Appendix], [Приложение], [Заметка] FROM DCM WHERE [В отправку] = Yes " \
-                f"AND {where_clause} ORDER BY [Код]"
+                f"AND {where_clause} "
+        query += "ORDER BY [Date of meeting]"
 
         print(query)
         with DcmManager() as mgr:
@@ -114,8 +128,75 @@ class ArchiveTab(BaseTab):
             self._status_info("Нет данных для отображения")
             return
         self.table.proxy_model.setSourceModel(model)
+        self.table.apply_column_config()
         self.model = model
         self._status_info(f"Загружено строк: {model.rowCount()}")
+
+    def _convert_to_access_date(self, date_str: str) -> str:
+        """
+        Преобразует дату из формата ДД.ММ.ГГГГ в формат Access #ММ/ДД/ГГГГ#
+        Пример: "05.05.2025" -> "#05/05/2025#"
+        """
+        try:
+            day, month, year = date_str.split('.')
+            print("_convert_to_access_date отработала")
+            return f"#{year}-{month}-{day}#"
+        except (ValueError, AttributeError):
+            return date_str
+
+    def _build_date_condition(self, date_string: str) -> str:
+        """
+        Строит условие для поиска по дате в формате Access.
+        Поддерживает форматы:
+        - "14.04.2026" - точная дата
+        - "14.04.2026-15.05.2026" - диапазон
+        - "14.04.2026 - 15.05.2026" - диапазон с пробелами
+        """
+        date_string = date_string.strip()
+
+        # Проверяем на диапазон с разделителями
+        for separator in ['-', '—']:
+            if separator in date_string:
+                parts = date_string.split(separator)
+                if len(parts) == 2:
+                    start_date = parts[0].strip()
+                    end_date = parts[1].strip()
+
+                    if self._is_valid_date_format(start_date) and self._is_valid_date_format(end_date):
+                        start_access = self._convert_to_access_date(start_date)
+                        end_access = self._convert_to_access_date(end_date)
+                        return f"[Date of meeting] BETWEEN {start_access} AND {end_access}"
+                break
+
+        # Если не диапазон, проверяем на одиночную дату
+        if self._is_valid_date_format(date_string):
+            access_date = self._convert_to_access_date(date_string)
+            return f"[Date of meeting] = {access_date}"
+
+        return None  # Не удалось распарсить как дату
+
+    def _is_valid_date_format(self, date_str: str) -> bool:
+        """Проверяет, соответствует ли строка формату ДД.ММ.ГГГГ"""
+        import re
+        pattern = r'^\d{2}\.\d{2}\.\d{4}$'
+        if not re.match(pattern, date_str):
+            return False
+
+        try:
+            day, month, year = map(int, date_str.split('.'))
+            if month < 1 or month > 12:
+                return False
+            if day < 1 or day > 31:
+                return False
+            if month in [4, 6, 9, 11] and day > 30:
+                return False
+            if month == 2:
+                is_leap = (year % 4 == 0 and year % 100 != 0) or (year % 400 == 0)
+                if day > (29 if is_leap else 28):
+                    return False
+            return True
+        except ValueError:
+            return False
 
     def on_button_clicked(self):
         dict_ = {
