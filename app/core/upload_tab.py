@@ -39,6 +39,7 @@ UPLOAD_COLUMNS: list[str] = [
     "Texts of  decisions, date",
     "Desighner's surname",
     "От кого вопрос",
+    "Отдел задавший вопрос",
     "Urgent/Срочный",
     "Вопрос в рабочем порядке",
     "Appendix",
@@ -77,6 +78,9 @@ class UploadTab(BaseTab):
         self.table = None
         super().__init__(title, icon=icon, space=0)
         self.main_window = main_window
+
+    def _confirm_unsaved(self, action: str = "продолжить"):
+        return True
 
     # ── UI ───────────────────────────────────────────────────────────────────
 
@@ -308,7 +312,7 @@ class CqUploadTab(UploadTab):
 
 class DcmUploadTab(UploadTab):
     """
-    Вкладка загрузки **обычных** вопросов (DCM).
+    Вкладка загрузки обычных вопросов (DCM).
 
     Особенности структуры Excel:
     - Колонка шифра документа стоит 2-й (индекс 1)
