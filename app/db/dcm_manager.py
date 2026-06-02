@@ -14,7 +14,6 @@ class DcmManager(AccessManager):
 
     def __init__(self, db_path: str | None = None):
         super().__init__(db_path)
-        self.current_date = datetime.now().strftime("%d.%m.%Y %H:%M:%S")
 
     # ====================== Получение данных ======================
 
@@ -39,7 +38,22 @@ class DcmManager(AccessManager):
             columns = [desc[0] for desc in cursor.description]
             print(f"_fetch_df -> columns={columns}")
             time1 = datetime.now()
-            rows = cursor.fetchall()  # проверить изменение скорости загрузки в дальнейшем
+            rows = []
+            while True:
+                batch = cursor.fetchmany(100)
+                if not batch:
+                    break
+                for row in batch:
+                    clean_row = []
+                    for val in row:
+                        try:
+                            if isinstance(val, str):
+                                val.encode('utf-8')
+                            clean_row.append(val)
+                        except (UnicodeDecodeError, UnicodeEncodeError):
+                            print(f"_fetch_df -> битая ячейка пропущена")
+                            clean_row.append(None)
+                    rows.append(clean_row)
             time2 = datetime.now()
             print(time2)
             print("Время работы fetch составляет", time2 - time1)
@@ -209,6 +223,8 @@ class DcmManager(AccessManager):
             print("DcmManager.save_changes -> changes is None")
             return True
 
+        current_date = datetime.now().strftime("%d.%m.%Y %H:%M:%S")
+
         try:
             print("DcmManager.update_record -> start")
             conn = self._get_connection()
@@ -225,7 +241,9 @@ class DcmManager(AccessManager):
                 values = change["values"].copy()
                 if "В отправку" in columns or "Texts of  decisions, date" in columns:
                     columns.append("Дата изменения текста ответа")
-                    values.append(self.current_date)
+                    values.append(current_date)
+                    columns.append("Перевод проверен")
+                    values.append(False)
 
                 set_parts = []
                 for col in columns:
