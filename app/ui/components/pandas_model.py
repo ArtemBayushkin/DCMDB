@@ -124,12 +124,20 @@ class PandasModel(QAbstractTableModel):
 
         if ctype == "checkbox" and role == Qt.ItemDataRole.CheckStateRole:
             bool_value = bool(value == Qt.CheckState.Checked.value)
+            old_value = bool(self._dataframe.iloc[row, index.column()])
+            if bool_value == old_value:
+                return False
             self._dataframe.iloc[row, index.column()] = bool_value
             self._log_change(row, col_name, bool_value)
             self.dataChanged.emit(index, index)
             return True
 
         if role == Qt.ItemDataRole.EditRole:
+            old_value = self._dataframe.iloc[row, index.column()]
+            old_str = "" if pd.isna(old_value) else str(old_value)
+            new_str = "" if (value is None) else str(value)
+            if old_str == new_str:  # ← реального изменения нет
+                return False
             self._dataframe.iloc[row, index.column()] = value
             self._log_change(row, col_name, value)
             self.dataChanged.emit(index, index)
