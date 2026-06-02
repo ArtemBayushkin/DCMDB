@@ -21,6 +21,7 @@ CQ_COLUMN_MAP: dict[str, str] = {
     "Designers surname": "Desighner's surname",
     "Designer's surname": "Desighner's surname",
     "提出人": "От кого вопрос",
+    "提出部门": "Отдел задавший вопрос",
 }
 
 CQ_FIXED_VALUES: dict[str, object] = {
@@ -43,6 +44,7 @@ DCM_COLUMN_MAP: dict[str, str] = {
     "Designer's surname": "Desighner's surname",
     "Whether it is urgent (Yes or No)": "Urgent/Срочный",
     "问题提出者": "От кого вопрос",
+    "提出部门": "Отдел задавший вопрос",
 }
 DCM_FIXED_VALUES: dict[str, object] = {}
 
@@ -210,7 +212,8 @@ class ExcelParser(QMainWindow):
             selected_columns = [
                 "ID", "Date of meeting", "Code of the WD or MD",
                 "Description of problem", "Symbols of decisions under the Protocol",
-                "Texts of  decisions, date", "Desighner's surname", "От кого вопрос"
+                "Texts of  decisions, date", "Desighner's surname", "От кого вопрос",
+                "Отдел задавший вопрос"
             ]
 
         # Ширина в Excel единицах
