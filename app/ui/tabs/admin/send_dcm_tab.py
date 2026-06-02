@@ -27,7 +27,7 @@ class SendDcmTab(BaseTab):
     def load_data(self, force: bool = False):
         date = self.search_input.text()
         print("SendDcm.load_data -> date = ", date)
-        if date is "":
+        if date == "":
             return self._status_warning("Введите в поле дату!")
         columns = [
             "ID", "Date of meeting", "Code of the WD or MD",
@@ -101,6 +101,6 @@ class SendDcmTab(BaseTab):
             return self._status_warning("Нет данных для экспорта.")
         if ExcelParser.write_excel(self.model._dataframe):
             print("upload_excel - success")
-            return self._status_success("Файл успешно сохранен")
+            return self.status_bar.show_warning("Файл успешно сохранен")
         else:
             return self._status_warning("Ошибка сохранения файла")
