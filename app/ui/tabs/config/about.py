@@ -205,7 +205,7 @@ class AboutDialog(QDialog):
         <h3 align="center">ЛИЦЕНЗИОННОЕ СОГЛАШЕНИЕ</h3>
 
         <p align="center"><b>DCMDB</b><br>
-        Версия 2.0.0<br>
+        Версия 2.0.1.1<br>
         © 2026 DCMDB</p>
 
         <h4>1. Права на использование</h4>
