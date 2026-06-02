@@ -5,6 +5,7 @@ from app.core.base_tab import BaseTab
 from app.db.dcm_manager import DcmManager
 from app.ui.components.searchable_table import AdvancedTableView
 from app.excel.excel_manager import ExcelParser
+from datetime import datetime
 
 
 class SendCqTab(BaseTab):
@@ -32,7 +33,8 @@ class SendCqTab(BaseTab):
             "Description of problem", "Symbols of decisions under the Protocol",
             "Appendix", "Текст решения, дата", "Перевод проверен",
             "Texts of  decisions, date", "Desighner's surname", "Приложение", "В отправку",
-            "Дата изменения текста ответа", "Дата отправки Заказчику", "Отправлен Заказчику"
+            "Дата изменения текста ответа", "Дата отправки Заказчику", "Отправлен Заказчику", "От кого вопрос",
+            "Отдел задавший вопрос",
         ]
         print(f"SendCqTab.load_data -> start | force={force}")
         if not force and not self._confirm_unsaved("Обновить данные и потерять изменения"):
@@ -116,7 +118,7 @@ class SendCqTab(BaseTab):
             return self._status_warning("Нет данных для экспорта.")
         if ExcelParser.write_excel(self.model._dataframe):
             print("upload_excel - success")
-            return self._status_success("Файл успешно сохранен")
+            return self.status_bar.show_warning("Файл успешно сохранен")
         else:
             return self._status_warning("Ошибка сохранения файла")
 
@@ -131,6 +133,7 @@ class SendCqTab(BaseTab):
         if not self.model or not self.table:
             return
 
+        current_date = datetime.now().strftime("%d.%m.%Y %H:%M:%S")
         # Находим индексы колонок
         df = self.model._dataframe
         columns = df.columns.tolist()
@@ -156,6 +159,6 @@ class SendCqTab(BaseTab):
             date_index = self.model.index(row, col_date_idx)
             self.model.setData(
                 date_index,
-                self._mgr.current_date,
+                current_date,
                 Qt.ItemDataRole.EditRole
             )
