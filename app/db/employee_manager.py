@@ -99,6 +99,7 @@ class EmployeeDatabaseManager(BaseDatabaseManager):
         query = f"SELECT TOP {limit} {select_fields} FROM [List]"
         if where:
             query += f" WHERE {where}"
+        query += "ORDER BY [ФИО]"
 
         try:
             conn = self._get_connection()
@@ -134,9 +135,9 @@ class EmployeeDatabaseManager(BaseDatabaseManager):
     # Методы, специфичные для базы сотрудников
     # ───────────────────────────────────────────────
 
-    def get_all_employees(self) -> pd.DataFrame:
+    def get_all_employees(self, **kwargs) -> pd.DataFrame:
         """Все сотрудники"""
-        return self.get_table_data()  # предполагаемая таблица — List
+        return self.get_table_data(**kwargs)
 
     def get_admins(self) -> pd.DataFrame:
         """Только администраторы (где Admin = True)"""
