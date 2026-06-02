@@ -140,7 +140,7 @@ class ArchiveTab(BaseTab):
         try:
             day, month, year = date_str.split('.')
             print("_convert_to_access_date отработала")
-            return f"#{year}-{month}-{day}#"
+            return f"#{year}/{month}/{day}#"
         except (ValueError, AttributeError):
             return date_str
 
@@ -218,6 +218,6 @@ class ArchiveTab(BaseTab):
             return self._status_warning("Нет данных для экспорта.")
         if ExcelParser.write_excel(self.model._dataframe):
             print("upload_excel - success")
-            return self._status_success("Файл успешно сохранен")
+            return self.status_bar.show_warning("Файл успешно сохранен")
         else:
             return self._status_warning("Ошибка сохранения файла")
